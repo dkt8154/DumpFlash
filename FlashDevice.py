@@ -285,7 +285,7 @@ class NandIO:
 			else:
 				onfi=False
 
-	   	if id[0]==0x98:
+		if id[0]==0x98:
 			self.Manufacturer="Toshiba"
 		elif id[0]==0xec:
 			self.Manufacturer="Samsung"
