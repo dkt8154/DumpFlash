@@ -240,18 +240,18 @@ class uImage:
 		(self.magic,self.hcrc,self.time,self.size,self.load,self.ep,self.dcrc,self.os,self.arch,self.type,self.comp,self.name)=struct.unpack(self.HEADER_PACK_STR, header)
 
 	def DumpHeader(self):
-		print 'Magic:\t0x%x'% (self.magic)
-		print 'HCRC:\t0x%x'% (self.hcrc)
-		print 'Time:\t0x%x'% (self.time)
-		print 'Size:\t0x%x'% (self.size)
-		print 'Load:\t0x%x'% (self.load)
-		print 'EP:\t0x%x'% (self.ep)
-		print 'DCRC:\t0x%x'% (self.dcrc)
-		print 'OS:\t0x%x (%s)'% (self.os, self.GetOSString(self.os))
-		print 'Arch:\t0x%x (%s)'% (self.arch, self.GetArchString(self.arch))
-		print 'Type:\t0x%x (%s)'% (self.type, self.GetTypeString(self.type))
-		print 'Comp:\t0x%x (%s)'% (self.comp, self.GetCompString(self.comp))
-		print 'Name:\t%s'% (self.name)
+		print('Magic:\t0x%x'% (self.magic))
+		print('HCRC:\t0x%x'% (self.hcrc))
+		print('Time:\t0x%x'% (self.time))
+		print('Size:\t0x%x'% (self.size))
+		print('Load:\t0x%x'% (self.load))
+		print('EP:\t0x%x'% (self.ep))
+		print('DCRC:\t0x%x'% (self.dcrc))
+		print('OS:\t0x%x (%s)'% (self.os, self.GetOSString(self.os)))
+		print('Arch:\t0x%x (%s)'% (self.arch, self.GetArchString(self.arch)))
+		print('Type:\t0x%x (%s)'% (self.type, self.GetTypeString(self.type)))
+		print('Comp:\t0x%x (%s)'% (self.comp, self.GetCompString(self.comp)))
+		print('Name:\t%s'% (self.name))
 
 	def CheckCRC(self):
 		fd=open(self.filename,'rb')
@@ -259,10 +259,10 @@ class uImage:
 		data=fd.read(self.size)
 		fd.close()
 
-		print 'Read %08X bytes out of %08X' % (len(data), self.size)
+		print('Read %08X bytes out of %08X' % (len(data), self.size))
 		new_header=header[0:4] + struct.pack("L",0) + header[8:]
-		print '%08X' % (zlib.crc32(new_header) & 0xFFFFFFFF)
-		print '%08X' % (zlib.crc32(data) & 0xFFFFFFFF)
+		print('%08X' % (zlib.crc32(new_header) & 0xFFFFFFFF))
+		print('%08X' % (zlib.crc32(data) & 0xFFFFFFFF))
 
 	def FixHeader(self):
 		fd=open(self.filename,'rb')
@@ -270,10 +270,10 @@ class uImage:
 		data=fd.read(self.size)
 		fd.close()
 
-		print 'New length: 0x%08x / Original length: 0x%08x' % (len(data), self.size)
+		print('New length: 0x%08x / Original length: 0x%08x' % (len(data), self.size))
 
 		self.dcrc=zlib.crc32(data)& 0xFFFFFFFF
-		print 'New DCRC: %08x' % self.dcrc
+		print('New DCRC: %08x' % self.dcrc)
 
 		new_header=header[0:4] + struct.pack("L",0) + header[8:]
 		self.size=len(data)
@@ -281,7 +281,7 @@ class uImage:
 		header=struct.pack(self.HEADER_PACK_STR, self.magic,self.hcrc,self.time,self.size,self.load,self.ep,self.dcrc,self.os,self.arch,self.type,self.comp,self.name)
 
 		self.hcrc=zlib.crc32(header)& 0xFFFFFFFF
-		print 'New HCRC: %08X' % self.hcrc
+		print('New HCRC: %08X' % self.hcrc)
 
 		header=struct.pack(self.HEADER_PACK_STR, self.magic,self.hcrc,self.time,self.size,self.load,self.ep,self.dcrc,self.os,self.arch,self.type,self.comp,self.name)
 		
@@ -295,10 +295,10 @@ class uImage:
 		data=fd.read(self.size)
 		fd.close()
 
-		print 'Read 0x%08x bytes out of 0x%08x' % (len(data), self.size)
+		print('Read 0x%08x bytes out of 0x%08x' % (len(data), self.size))
 		new_header=header[0:4] + struct.pack("L",0) + header[8:]
-		print 'HCRC: 0x%08x' % (zlib.crc32(new_header) & 0xFFFFFFFF)
-		print 'DCRC: 0x%08x' % (zlib.crc32(data) & 0xFFFFFFFF)
+		print('HCRC: 0x%08x' % (zlib.crc32(new_header) & 0xFFFFFFFF))
+		print('DCRC: 0x%08x' % (zlib.crc32(data) & 0xFFFFFFFF))
 
 	def Extract(self):
 		seq=0
@@ -310,7 +310,7 @@ class uImage:
 				(length,)=struct.unpack(">L",fd.read(4))
 
 				if length>0:
-					print "Found multi image of length 0x%x" % (length)
+					print("Found multi image of length 0x%x" % (length))
 					lengths.append(length)
 				elif length==0:
 					break
@@ -320,7 +320,7 @@ class uImage:
 
 				wfilename="%s-%.2d" % (self.filename, seq)
 				seq+=1
-				print "Extracting to %s" % wfilename
+				print("Extracting to %s" % wfilename)
 				wfd=open(wfilename, "wb")
 				wfd.write(data)
 				wfd.close()
@@ -334,7 +334,7 @@ class uImage:
 
 			if self.comp==self.COMP_NONE:
 				wfilename="%s-%.2d" % (self.filename, seq)
-				print "Extracting to %s" % wfilename
+				print("Extracting to %s" % wfilename)
 				wfd=open(wfilename, "wb")
 				wfd.write(data)
 				wfd.close()

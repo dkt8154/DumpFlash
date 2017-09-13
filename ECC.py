@@ -62,7 +62,7 @@ class ECC:
 			xor_bit = bit7 ^ bit6 ^ bit5 ^ bit4 ^ bit3 ^ bit2 ^ bit1 ^ bit0
 
 			if self.DebugLevel>0:
-				print "%3x  " % i, bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0
+				print("%3x  " % i, bit7, bit6, bit5, bit4, bit3, bit2, bit1, bit0)
 	
 			if i & 0x01 == 0x01:
 				p8 = xor_bit ^ p8

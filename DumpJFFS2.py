@@ -96,15 +96,15 @@ class JFFS:
 
 			if magic!=0x1985:
 				if self.DumpMagicError:
-					print '* Magic Error:', hex(data_offset), "(", hex(magic), ",", hex(nodetype), ")" 
-					print '\tLast record:', hex(last_data_offset), "(", hex(last_magic), ",", hex(last_nodetype), ",", hex(last_totlen), ")" 
+					print('* Magic Error:', hex(data_offset), "(", hex(magic), ",", hex(nodetype), ")") 
+					print('\tLast record:', hex(last_data_offset), "(", hex(last_magic), ",", hex(last_nodetype), ",", hex(last_totlen), ")") 
 
 				while data_offset < len(data):
 					tag = data[data_offset:data_offset+4]
 					if tag=='\x85\x19\x02\xe0':
 						if self.DumpMagicError:
-							print '\tFound next inode at 0x%x' % data_offset
-							print ''
+							print('\tFound next inode at 0x%x' % data_offset)
+							print('')
 
 						break
 					data_offset+=0x4
@@ -126,17 +126,17 @@ class JFFS:
 						payload=decompress(payload)
 					except:
 						if self.DebugLevel>0:
-							print "* Uncompress error"
+							print("* Uncompress error")
 							error=True
 						pass
 	
 					if self.DebugLevel>0:
-						print "payload length:", len(payload)
+						print("payload length:", len(payload))
 		
 				if self.DebugLevel>1:
 					pprint.pprint(payload)
 		
-				if not self.INodeMap.has_key(ino):
+				if ino not in self.INodeMap:
 					self.INodeMap[ino] = []
 		
 				self.INodeMap[ino].append( {
@@ -163,26 +163,26 @@ class JFFS:
 						"payload": payload
 					})
 		
-				if error or (target_filename!='' and self.DirentMap.has_key(ino) and self.DirentMap[ino]['payload'].find(target_filename)>=0):
+				if error or (target_filename!='' and ino in self.DirentMap and self.DirentMap[ino]['payload'].find(target_filename)>=0):
 					#if self.DebugLevel>0:
 					if 1==1:
-						print '='*79
-						print '* JFFS2_NODETYPE_INODE:'
-						print "magic: %x nodetype: %x totlen: %x" % (magic, nodetype, totlen)
-						print 'data_offset: %x offset: %x csize: %x dsize: %x next_offset: %x' % (data_offset, offset, csize, dsize, data_offset + 44 + csize )
-						print "ino: %x version: %x mode: %x" % (ino, version, mode)
-						print "uid: %x gid: %x" % (uid, gid)
-						print "atime: %x mtime: %x ctime: %x" % (atime, mtime, ctime)
-						print "compr: %x usercompr: %x" % (compr, usercompr)
-						print "flags: %x isize: %x" % (flags, isize)
-						print "hdr_crc: %x data_crc: %x node_crc: %x" % (hdr_crc, data_crc, node_crc)
-						print ''
+						print('='*79)
+						print('* JFFS2_NODETYPE_INODE:')
+						print("magic: %x nodetype: %x totlen: %x" % (magic, nodetype, totlen))
+						print('data_offset: %x offset: %x csize: %x dsize: %x next_offset: %x' % (data_offset, offset, csize, dsize, data_offset + 44 + csize ))
+						print("ino: %x version: %x mode: %x" % (ino, version, mode))
+						print("uid: %x gid: %x" % (uid, gid))
+						print("atime: %x mtime: %x ctime: %x" % (atime, mtime, ctime))
+						print("compr: %x usercompr: %x" % (compr, usercompr))
+						print("flags: %x isize: %x" % (flags, isize))
+						print("hdr_crc: %x data_crc: %x node_crc: %x" % (hdr_crc, data_crc, node_crc))
+						print('')
 		
 			elif nodetype==JFFS2_NODETYPE_DIRENT:
 				(hdr_crc, pino, version, ino, mctime, nsize, ent_type, unused, node_crc, name_crc) = struct.unpack(dirent_unpack_fmt, data[data_offset+header_struct_size:data_offset+header_struct_size+dirent_struct_size])
 				payload = data[data_offset+header_struct_size+dirent_struct_size+1: data_offset+header_struct_size+dirent_struct_size+1+nsize]
 
-				if not self.DirentMap.has_key(ino) or self.DirentMap[ino]['version']<version:
+				if ino not in self.DirentMap or self.DirentMap[ino]['version']<version:
 					self.DirentMap[ino] = {
 							"hdr_crc": hdr_crc, 
 							"pino": pino, 
@@ -196,34 +196,34 @@ class JFFS:
 						}
 		
 				if target_filename!='' and payload.find(target_filename)>=0:
-					print '='*79
-					print '* JFFS2_NODETYPE_DIRENT:'
-					print 'data_offset:\t',hex(data_offset)
-					print "magic:\t\t%x" % magic
-					print "nodetype:\t%x" % nodetype
-					print "totlen:\t\t%x" % totlen
-					print "hdr_crc:\t%x" % hdr_crc
-					print "pino:\t\t%x" % pino
-					print "version:\t%x" % version
-					print "ino:\t\t%x" % ino
-					print "node_crc:\t%x" % node_crc
+					print('='*79)
+					print('* JFFS2_NODETYPE_DIRENT:')
+					print('data_offset:\t',hex(data_offset))
+					print("magic:\t\t%x" % magic)
+					print("nodetype:\t%x" % nodetype)
+					print("totlen:\t\t%x" % totlen)
+					print("hdr_crc:\t%x" % hdr_crc)
+					print("pino:\t\t%x" % pino)
+					print("version:\t%x" % version)
+					print("ino:\t\t%x" % ino)
+					print("node_crc:\t%x" % node_crc)
 
 					parent_node=''
-					if self.DirentMap.has_key(pino):
+					if pino in self.DirentMap:
 						parent_node=self.DirentMap[pino]['payload']
 
-					print "Payload:\t%s" % (parent_node + "\\" + payload)
-					print ''
+					print("Payload:\t%s" % (parent_node + "\\" + payload))
+					print('')
 		
 			elif nodetype==0x2004:
 				pass
 		
 			else:
-				print '='*79
-				print 'data_offset:\t',hex(data_offset)
-				print "magic:\t\t%x" % magic
-				print "nodetype:\t%x" % nodetype
-				print "totlen:\t\t%x" % totlen
+				print('='*79)
+				print('data_offset:\t',hex(data_offset))
+				print("magic:\t\t%x" % magic)
+				print("nodetype:\t%x" % nodetype)
+				print("totlen:\t\t%x" % totlen)
 				
 			(last_magic, last_nodetype, last_totlen) = (magic, nodetype, totlen)
 		
@@ -239,17 +239,17 @@ class JFFS:
 				data_offset += 0x200-current_page_data_len
 	
 			if self.DebugLevel>0:
-				print '* Record (@%x):\tMagic: %x\tType: %x\tTotlen %x\tPadded Totlen: %x' % (last_data_offset, last_magic, last_nodetype, last_totlen, totlen)
+				print('* Record (@%x):\tMagic: %x\tType: %x\tTotlen %x\tPadded Totlen: %x' % (last_data_offset, last_magic, last_nodetype, last_totlen, totlen))
 			total_count += 1
 		
-		print "Total Count:",total_count
+		print("Total Count:",total_count)
 		if self.DebugLevel>0:
 			pprint.pprint(self.DirentMap)
 	
 	def GetPath(self,ino):
 		path=''
 
-		while ino!=0 and self.DirentMap.has_key(ino):
+		while ino!=0 and ino in self.DirentMap:
 			path = '/' + self.DirentMap[ino]['payload'] + path
 			ino=self.DirentMap[ino]['pino']
 
@@ -259,7 +259,7 @@ class JFFS:
 		data=[]
 		for record in inode_map_record:
 			if dump:
-				print "offset: %x dsize: %x data offset: %x length: %x (ver: %x) totlen: %x" % (record['offset'], record['dsize'], record['data_offset'], len(record['payload']), record['version'], record['totlen'])
+				print("offset: %x dsize: %x data offset: %x length: %x (ver: %x) totlen: %x" % (record['offset'], record['dsize'], record['data_offset'], len(record['payload']), record['version'], record['totlen']))
 
 			offset = record['offset']
 			dsize=record['dsize']
@@ -270,7 +270,7 @@ class JFFS:
 				try:
 					data+=['\x00'] * new_data_len
 				except:
-					print "offset: %x dsize: %x data offset: %x length: %x (ver: %x) totlen: %x" % (record['offset'], record['dsize'], record['data_offset'], len(record['payload']), record['version'], record['totlen'])
+					print("offset: %x dsize: %x data offset: %x length: %x (ver: %x) totlen: %x" % (record['offset'], record['dsize'], record['data_offset'], len(record['payload']), record['version'], record['totlen']))
 
 			data[offset:offset+dsize]=record['payload']
 
@@ -282,8 +282,8 @@ class JFFS:
 
 		for record in inode_map_record:
 			if dump:
-				print len(inode_map_record)
-				print "Version: %x Offset: %x DSize: %x Data Offset: %x Payload Length: %x" % (record['version'], record['offset'], record['dsize'], record['data_offset'], len(record['payload']))
+				print(len(inode_map_record))
+				print("Version: %x Offset: %x DSize: %x Data Offset: %x Payload Length: %x" % (record['version'], record['offset'], record['dsize'], record['data_offset'], len(record['payload'])))
 
 			offset = record['offset']
 			if offset == next_offset:
@@ -308,10 +308,10 @@ class JFFS:
 						try:
 							data=compress(data)
 						except:
-							print "* Compress error"
+							print("* Compress error")
 						
-					print 'data_offset: %x offset: %x dsize: %x csize: %x' % (record['data_offset'], record['offset'], record['dsize'], record['csize'])
-					print 'Trying to write: %x' % len(data)
+					print('data_offset: %x offset: %x dsize: %x csize: %x' % (record['data_offset'], record['offset'], record['dsize'], record['csize']))
+					print('Trying to write: %x' % len(data))
 
 					if record['csize'] > len(data):
 						fd=open(output_filename,'r+')
@@ -354,19 +354,19 @@ class JFFS:
 		return data
 
 	def DumpFile(self, filename, mod='', out=''):
-		print 'DumpFile'
-		for ino in self.DirentMap.keys():
-			if self.INodeMap.has_key(ino):
+		print('DumpFile')
+		for ino in list(self.DirentMap.keys()):
+			if ino in self.INodeMap:
 				path=self.GetPath(ino)
 
 				if path==filename:
-					print ''
-					print '='*80
-					print ino, self.GetPath(ino), len(self.DirentMap[ino]["payload"])
+					print('')
+					print('='*80)
+					print(ino, self.GetPath(ino), len(self.DirentMap[ino]["payload"]))
 					pprint.pprint(self.DirentMap[ino])
 					 
 					data = self.ReadFileData(self.INodeMap[ino])
-					print data
+					print(data)
 
 					if mod!='':
 						fd=open(mod,'rb')
@@ -393,13 +393,13 @@ class JFFS:
 			write_file=True
 
 		if dump:
-			print 'File %s (ino: %d)' % (path, ino)
+			print('File %s (ino: %d)' % (path, ino))
 
 		data = self.ReadFileData(self.INodeMap[ino], dump=dump)
 
 		if dump:
-			print '\tFile length: %d' % (len(data))
-			print ''
+			print('\tFile length: %d' % (len(data)))
+			print('')
 
 		if len(data)==0:
 			return
@@ -413,7 +413,7 @@ class JFFS:
 				fd.write(data)
 				fd.close()
 			except:
-				print "Failed to create file: %s" % (local_path)
+				print("Failed to create file: %s" % (local_path))
 				pass
 
 	def Dump(self,output_dir,target_filename=''):
@@ -421,40 +421,40 @@ class JFFS:
 			os.makedirs(output_dir)
 
 		processed_ino={}
-		for ino in self.DirentMap.keys():
-			if self.INodeMap.has_key(ino):
+		for ino in list(self.DirentMap.keys()):
+			if ino in self.INodeMap:
 				processed_ino[ino]=True
 				self.DumpIno(output_dir,ino,target_filename)
 
-		for ino in self.INodeMap.keys():
-			if not processed_ino.has_key(ino):
+		for ino in list(self.INodeMap.keys()):
+			if ino not in processed_ino:
 				self.DumpIno(output_dir,ino,target_filename)
 
 	def ListData(self,inode_map_record):
 		for record in inode_map_record:
 			offset = record['offset']
-			print 'version: 0x%x' % record['version']
-			print '\toffset: 0x%x' % record['offset']
-			print '\tpayload: 0x%x' % len(record['payload'])
-			print '\tdata_offset: 0x%x' % record['data_offset']
-			print '\tctime: 0x%x' % record['ctime']
-			print '\tmtime: 0x%x' % record['mtime']
-			print '\tatime: 0x%x' % record['atime']
+			print('version: 0x%x' % record['version'])
+			print('\toffset: 0x%x' % record['offset'])
+			print('\tpayload: 0x%x' % len(record['payload']))
+			print('\tdata_offset: 0x%x' % record['data_offset'])
+			print('\tctime: 0x%x' % record['ctime'])
+			print('\tmtime: 0x%x' % record['mtime'])
+			print('\tatime: 0x%x' % record['atime'])
 
 	def ListFile(self,filename):
-		print 'Path\tInode\tNumber of records'
-		for ino in self.DirentMap.keys():
-			if self.INodeMap.has_key(ino):
+		print('Path\tInode\tNumber of records')
+		for ino in list(self.DirentMap.keys()):
+			if ino in self.INodeMap:
 				if filename=='':
-					print self.GetPath(ino)
-					print '\tInode:', ino
-					print '\tRecords:', len(self.INodeMap[ino])
+					print(self.GetPath(ino))
+					print('\tInode:', ino)
+					print('\tRecords:', len(self.INodeMap[ino]))
 				else:
 					path=self.GetPath(ino)
 					if path==filename:
-						print self.GetPath(ino)
-						print '\tInode:', ino
-						print '\tRecords:', len(self.INodeMap[ino])
+						print(self.GetPath(ino))
+						print('\tInode:', ino)
+						print('\tRecords:', len(self.INodeMap[ino]))
 						self.ListData(self.INodeMap[ino])
 
 	def MakeInode(
@@ -504,42 +504,42 @@ class JFFS:
 
 		debug=0
 		if debug>0:
-			print ''
-			print 'header: %08X' % ((crc32_inst.calc(header)) & 0xFFFFFFFF)
-			print 'inode: %08X' % ((crc32_inst.calc(inode)) & 0xFFFFFFFF)
-			print 'header+inode: %08X' % ((crc32_inst.calc(ri)) & 0xFFFFFFFF)
-			print 'payload: %08X' % ((crc32_inst.calc(payload)) & 0xFFFFFFFF)
-			print 'data: %08X' % ((crc32_inst.calc(data)) & 0xFFFFFFFF)
+			print('')
+			print('header: %08X' % ((crc32_inst.calc(header)) & 0xFFFFFFFF))
+			print('inode: %08X' % ((crc32_inst.calc(inode)) & 0xFFFFFFFF))
+			print('header+inode: %08X' % ((crc32_inst.calc(ri)) & 0xFFFFFFFF))
+			print('payload: %08X' % ((crc32_inst.calc(payload)) & 0xFFFFFFFF))
+			print('data: %08X' % ((crc32_inst.calc(data)) & 0xFFFFFFFF))
 
 		return data
 
 	def MakeInodeWithHeader(self, header, payload):
 		(magic,nodetype,totlen) = struct.unpack(header_unpack_fmt,header[0:header_struct_size])
 
-		print "magic: %X" % (magic)
-		print "nodetype: %X" % (nodetype)
-		print "totlen: %X" % (totlen)
+		print("magic: %X" % (magic))
+		print("nodetype: %X" % (nodetype))
+		print("totlen: %X" % (totlen))
 
 		(hdr_crc, ino, version, mode, uid, gid, isize, atime, mtime, ctime, offset, csize, dsize, compr, usercompr, flags, data_crc, node_crc) = struct.unpack(inode_unpack_fmt, header[header_struct_size:header_struct_size+inode_struct_size])
 
-		print "hdr_crc: %X" % (hdr_crc)
-		print "ino: %X" % (ino)
-		print "version: %X" % (version)
-		print "mode: %X" % (mode)
-		print "uid: %X" % (uid)
-		print "gid: %X" % (gid)
-		print "isize: %X" % (isize)
-		print "atime: %X" % (atime)
-		print "mtime: %X" % (mtime)
-		print "ctime: %X" % (ctime)
-		print "offset: %X" % (offset)
-		print "csize: %X" % (csize)
-		print "dsize: %X" % (dsize)
-		print "compr: %X" % (compr)
-		print "usercompr: %X" % (usercompr)
-		print "flags: %X" % (flags)
-		print "data_crc: %X" % (data_crc)
-		print "node_crc: %X" % (node_crc)
+		print("hdr_crc: %X" % (hdr_crc))
+		print("ino: %X" % (ino))
+		print("version: %X" % (version))
+		print("mode: %X" % (mode))
+		print("uid: %X" % (uid))
+		print("gid: %X" % (gid))
+		print("isize: %X" % (isize))
+		print("atime: %X" % (atime))
+		print("mtime: %X" % (mtime))
+		print("ctime: %X" % (ctime))
+		print("offset: %X" % (offset))
+		print("csize: %X" % (csize))
+		print("dsize: %X" % (dsize))
+		print("compr: %X" % (compr))
+		print("usercompr: %X" % (usercompr))
+		print("flags: %X" % (flags))
+		print("data_crc: %X" % (data_crc))
+		print("node_crc: %X" % (node_crc))
 
 		return self.MakeInode(
 			ino=ino,
@@ -577,8 +577,8 @@ class JFFS:
 		basename=os.path.basename(path)
 
 		if path==target_filename:
-			print 'File %s (ino: %d)' % (path, ino)
-			print "%x %x" % (offset,size)
+			print('File %s (ino: %d)' % (path, ino))
+			print("%x %x" % (offset,size))
 
 			data=[]
 			for record in self.INodeMap[ino]:
@@ -588,7 +588,7 @@ class JFFS:
 				if record_offset <= offset and offset <= record_offset+record_dsize:
 					record_data_offset=record['data_offset']
 					totlen=record['totlen']
-					print "%x (%x) -> file offset: %x (%x) totlen=%x" % (record_offset, record_dsize , record_data_offset, record['csize'], totlen)
+					print("%x (%x) -> file offset: %x (%x) totlen=%x" % (record_offset, record_dsize , record_data_offset, record['csize'], totlen))
 
 					fd=open(new_data_filename,'rb')
 					fd.seek(record_offset)
@@ -615,7 +615,7 @@ class JFFS:
 						payload=new_data
 					)
 					new_inode_len=len(new_inode)
-					print " new_inode: %x" % (len(new_inode))
+					print(" new_inode: %x" % (len(new_inode)))
 
 					if totlen>new_inode_len:
 						new_inode+=(totlen-new_inode_len) * '\xFF'
@@ -644,13 +644,13 @@ class JFFS:
 
 	def WriteFile(self,target_filename,new_data_filename,offset,size,output_filename):
 		processed_ino={}
-		for ino in self.DirentMap.keys():
-			if self.INodeMap.has_key(ino):
+		for ino in list(self.DirentMap.keys()):
+			if ino in self.INodeMap:
 				processed_ino[ino]=True
 				self.WriteIno(ino,target_filename,offset,size,new_data_filename,output_filename)
 
-		for ino in self.INodeMap.keys():
-			if not processed_ino.has_key(ino):
+		for ino in list(self.INodeMap.keys()):
+			if ino not in processed_ino:
 				self.WriteIno(ino,target_filename,offset,size,new_data_filename,output_filename)
 
 if __name__=='__main__':
@@ -693,7 +693,7 @@ if __name__=='__main__':
 		jffs.WriteFile(options.target_filename, options.new_data_filename, options.offset, options.size, options.output_filename)
 
 	elif options.output_dir!='':
-		print 'Dumping files to a folder: %s' % (options.output_dir)
+		print('Dumping files to a folder: %s' % (options.output_dir))
 		jffs.Dump(options.output_dir, target_filename=options.target_filename)
 
 	elif options.file!='' and options.output_filename !='':

@@ -174,7 +174,7 @@ class NandIO:
 				return
 			else:
 				if self.Debug>0:
-					print 'Not Ready', data
+					print('Not Ready', data)
 		return
 
 	def nandRead(self,cl,al,count):
@@ -387,21 +387,21 @@ class NandIO:
         	return bits+1
 
 	def DumpInfo(self):
-		print 'Full ID:\t',self.IDString
-		print 'ID Length:\t',self.IDLength
-		print 'Name:\t\t',self.Name
-		print 'ID:\t\t0x%x' % self.ID
-		print 'Page size:\t0x%x' % self.PageSize
-		print 'OOB size:\t0x%x' % self.OOBSize
-		print 'Page count:\t0x%x' % self.PageCount
-		print 'Size:\t\t0x%x' % self.ChipSizeMB
-		print 'Erase size:\t0x%x' % self.EraseSize
-		print 'Block count:\t', self.BlockCount
-		print 'Options:\t',self.Options
-		print 'Address cycle:\t',self.AddrCycles
-		print 'Bits per Cell:\t',self.BitsPerCell
-		print 'Manufacturer:\t',self.Manufacturer
-		print ''
+		print('Full ID:\t',self.IDString)
+		print('ID Length:\t',self.IDLength)
+		print('Name:\t\t',self.Name)
+		print('ID:\t\t0x%x' % self.ID)
+		print('Page size:\t0x%x' % self.PageSize)
+		print('OOB size:\t0x%x' % self.OOBSize)
+		print('Page count:\t0x%x' % self.PageCount)
+		print('Size:\t\t0x%x' % self.ChipSizeMB)
+		print('Erase size:\t0x%x' % self.EraseSize)
+		print('Block count:\t', self.BlockCount)
+		print('Options:\t',self.Options)
+		print('Address cycle:\t',self.AddrCycles)
+		print('Bits per Cell:\t',self.BitsPerCell)
+		print('Manufacturer:\t',self.Manufacturer)
+		print('')
 
 	def CheckBadBlocks(self):
 		bad_blocks={}
@@ -422,17 +422,17 @@ class NandIO:
 				oob=self.ReadOOB(page+pageoff)
 
 				if oob[5]!='\xff':
-					print 'Bad block found:', block
+					print('Bad block found:', block)
 					bad_blocks[page]=1
 					break
-		print 'Checked %d blocks and found %d bad blocks' % ( block+1, len(bad_blocks))
+		print('Checked %d blocks and found %d bad blocks' % ( block+1, len(bad_blocks)))
 		return bad_blocks
 
 	def ReadOOB(self,pageno):
 		bytes=[]
 		if self.Options&self.LP_Options:
 			self.sendCmd(self.NAND_CMD_READ0)
-			self.sendAddr((pageno<<16L),self.AddrCycles)
+			self.sendAddr((pageno<<16),self.AddrCycles)
 			self.sendCmd(self.NAND_CMD_READSTART)
 			self.WaitReady()
 			bytes += self.readFlashData(self.OOBSize)
@@ -523,7 +523,7 @@ class NandIO:
 		data=''
 
 		if bad_block and not raw_mode:
-			print '\nSkipping bad block at %d' % (pageno/self.PagePerBlock)
+			print('\nSkipping bad block at %d' % (pageno/self.PagePerBlock))
 		else:
 			for ch in page:
 				data+=chr(ch)
@@ -564,7 +564,7 @@ class NandIO:
 				self.sendCmd(self.NAND_CMD_PAGEPROG)
 				err=self.Status()
 				if err&self.NAND_STATUS_FAIL:
-					print 'Failed to write 1st half of ', pageno, err
+					print('Failed to write 1st half of ', pageno, err)
 					continue
 				break
 
@@ -578,7 +578,7 @@ class NandIO:
 				self.sendCmd(self.NAND_CMD_PAGEPROG)
 				err=self.Status()
 				if err&self.NAND_STATUS_FAIL:
-					print 'Failed to write 2nd half of ', pageno, err
+					print('Failed to write 2nd half of ', pageno, err)
 					continue
 				break
 
@@ -592,7 +592,7 @@ class NandIO:
 				self.sendCmd(self.NAND_CMD_PAGEPROG)
 				err=self.Status()
 				if err&self.NAND_STATUS_FAIL:
-					print 'Failed to write OOB of ', pageno, err
+					print('Failed to write OOB of ', pageno, err)
 					continue
 				break
 
@@ -644,7 +644,7 @@ class NandIO:
 							break
 
 					if bad_block_found:
-						print '\nSkipping bad block at ', block
+						print('\nSkipping bad block at ', block)
 						page+=self.PagePerBlock
 						block+=1
 						continue
@@ -670,7 +670,7 @@ class NandIO:
 				length+=len(page_data)
 
 			if len(page_data)!=self.RawPageSize:
-				print 'Not enough source data'
+				print('Not enough source data')
 				break
 
 			current = time.time()
@@ -695,7 +695,7 @@ class NandIO:
 
 		fd.close()
 
-		print '\nWritten %x bytes / %x byte' % (length, len(data))
+		print('\nWritten %x bytes / %x byte' % (length, len(data)))
 
 	def Erase(self):
 		block=0
@@ -704,7 +704,7 @@ class NandIO:
 			block+=1
 
 	def EraseBlock(self,start_block, end_block):
-		print 'Erasing Block: 0x%x ~ 0x%x' % (start_block, end_block)
+		print('Erasing Block: 0x%x ~ 0x%x' % (start_block, end_block))
 		for block in range(start_block, end_block+1, 1):
-			print "Erasing block", block
+			print("Erasing block", block)
 			self.EraseBlockByPage(block * self.PagePerBlock)

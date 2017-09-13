@@ -83,13 +83,13 @@ class FlashUtil:
 				page_in_block=page%self.io.PagePerBlock
 
 				offset=self.io.GetPageOffset(page)
-				print "ECC Error (Block: %3d Page: %3d Data Offset: 0x%x OOB Offset: 0x%x)" % (block, page, offset, offset+self.io.PageSize)
-				print "  OOB:  0x%.2x 0x%.2x 0x%.2x" % ( oob_ecc0, oob_ecc1, oob_ecc2)
-				print "  Calc: 0x%.2x 0x%.2x 0x%.2x" % ( ecc0, ecc1, ecc2)
-				print "  XOR:  0x%.2x 0x%.2x 0x%.2x" % ( ecc0 ^ oob_ecc0, ecc1 ^ oob_ecc1, ecc2 ^ oob_ecc2)
-				print ''
+				print("ECC Error (Block: %3d Page: %3d Data Offset: 0x%x OOB Offset: 0x%x)" % (block, page, offset, offset+self.io.PageSize))
+				print("  OOB:  0x%.2x 0x%.2x 0x%.2x" % ( oob_ecc0, oob_ecc1, oob_ecc2))
+				print("  Calc: 0x%.2x 0x%.2x 0x%.2x" % ( ecc0, ecc1, ecc2))
+				print("  XOR:  0x%.2x 0x%.2x 0x%.2x" % ( ecc0 ^ oob_ecc0, ecc1 ^ oob_ecc1, ecc2 ^ oob_ecc2))
+				print('')
 	
-		print "Checked %d ECC record and found %d errors" % (count,error_count)
+		print("Checked %d ECC record and found %d errors" % (count,error_count))
 
 		
 	def CheckBadBlockPage(self,oob):
@@ -133,14 +133,14 @@ class FlashUtil:
 
 			if ret==self.BAD_BLOCK:
 				error_count+=1
-				print "\nBad Block: %d (at physical offset 0x%x)" % (block+1, (block * self.io.BlockSize ))
+				print("\nBad Block: %d (at physical offset 0x%x)" % (block+1, (block * self.io.BlockSize )))
 	
 			elif ret==self.ERROR:
 				break
-		print "\nChecked %d blocks and found %d errors" % (block+1,error_count)
+		print("\nChecked %d blocks and found %d errors" % (block+1,error_count))
 
 	def ReadPages(self,start_page=-1,end_page=-1,remove_oob=False, filename='', append=False, maximum=0, seq=False, raw_mode=False):	
-		print '* ReadPages: %d ~ %d' % (start_page, end_page)
+		print('* ReadPages: %d ~ %d' % (start_page, end_page))
 
 		if seq:
 			return self.ReadSeqPages(start_page, end_page, remove_oob, filename, append=append, maximum = maximum, raw_mode=raw_mode)
@@ -169,10 +169,10 @@ class FlashUtil:
 		start=time.time()
 		last_time=time.time()
 		for page in range(start_page,end_page,1):
-			print 'page:', page
+			print('page:', page)
 			data=self.io.ReadPage(page,remove_oob)
 			
-			print 'data: %x' % len(data)
+			print('data: %x' % len(data))
 
 			if filename:
 				if maximum!=0:
@@ -338,8 +338,8 @@ class FlashUtil:
 		end_page = end_block_offset / self.io.RawPageSize
 		end_page_offset = end_block_offset % self.io.RawPageSize
 
-		print 'Dumping blocks (Block: 0x%x Offset: 0x%x ~  Block: 0x%x Offset: 0x%x)' % (start_block, start_block_offset, end_block, end_block_offset)
-		print '0x%x - 0x%x' % (start,end)
+		print('Dumping blocks (Block: 0x%x Offset: 0x%x ~  Block: 0x%x Offset: 0x%x)' % (start_block, start_block_offset, end_block, end_block_offset))
+		print('0x%x - 0x%x' % (start,end))
 
 		for block in range(start_block,end_block+1,1):
 			ret=self.CheckBadBlock(block)
@@ -374,7 +374,7 @@ class FlashUtil:
 				break
 
 			else:
-				print "Skipping block %d" % block
+				print("Skipping block %d" % block)
 		
 		wfd.close()
 
@@ -430,7 +430,7 @@ class FlashUtil:
 
 
 	def FindUBootImages(self):
-		print 'Finding U-Boot Images'
+		print('Finding U-Boot Images')
 		block = 0
 
 		while 1:
@@ -447,13 +447,13 @@ class FlashUtil:
 				uimage=uImage()
 				uimage.ParseHeader(self.readData(block*self.io.PagePerBlock, 64))
 				block_size=uimage.size / self.io.BlockSize
-				print '\nU-Boot Image found at block %d ~ %d (0x%x ~ 0x%x)' % ( block, block+block_size, block, block+block_size )
+				print('\nU-Boot Image found at block %d ~ %d (0x%x ~ 0x%x)' % ( block, block+block_size, block, block+block_size ))
 				uimage.DumpHeader()
-				print ''
+				print('')
 
 			block += 1
 
-		print "Checked %d blocks" % (block)
+		print("Checked %d blocks" % (block))
 
 	def DumpUBootImages(self):
 		seq=0
@@ -461,7 +461,7 @@ class FlashUtil:
 			data=self.io.ReadPage(pageno)
 
 			if data[0:4]=='\x27\x05\x19\x56':
-				print 'U-Boot Image found at block 0x%x' % ( pageno / self.io.PagePerBlock )
+				print('U-Boot Image found at block 0x%x' % ( pageno / self.io.PagePerBlock ))
 				uimage=uImage()
 				uimage.ParseHeader(data[0:0x40])
 				uimage.DumpHeader()
@@ -474,7 +474,7 @@ class FlashUtil:
 				except:
 					pass
 				self.readData(pageno, 0x40+uimage.size, output_filename)
-				print ''
+				print('')
 
 				uimage=uImage()
 				uimage.ParseFile(output_filename)
@@ -504,21 +504,21 @@ class FlashUtil:
 		maximum_pageno=-1
 		last_jffs2_page=-1
 
-		print 'Find JFFS2: page count: 0x%x' % (self.io.PageCount)
+		print('Find JFFS2: page count: 0x%x' % (self.io.PageCount))
 		for pageno in range(0,self.io.PageCount,self.io.PagePerBlock):
 			oob=self.io.ReadOOB(pageno)
 
 			if oob[8:]=='\x85\x19\x03\x20\x08\x00\x00\x00':
-				print 'JFFS2 block found:', pageno, pageno-last_jffs2_page
+				print('JFFS2 block found:', pageno, pageno-last_jffs2_page)
 				last_jffs2_page=pageno
 
 				if minimum_pageno == -1:
 					minimum_pageno = pageno
 				maximum_pageno = pageno
 			elif oob[0:3]=='\xff\xff\xff':
-				print 'blank page'
+				print('blank page')
 			else:
-				print 'OOB: ', pageno, pprint.pprint(oob)
+				print('OOB: ', pageno, pprint.pprint(oob))
 
 		return [minimum_pageno, maximum_pageno]
 	
@@ -541,7 +541,7 @@ class FlashUtil:
 						start_block=block
 					distance_to_last_block=block - end_block
 					if distance_to_last_block>10:
-						print "JFFS2 block found: %d ~ %d" % (start_block, block)
+						print("JFFS2 block found: %d ~ %d" % (start_block, block))
 						jffs2_blocks.append([start_block,block])
 						start_block=-1
 					end_block=block
@@ -549,18 +549,18 @@ class FlashUtil:
 			elif ret == self.ERROR:
 				break
 			else:
-				print 'Bad block', block
+				print('Bad block', block)
 
 		if start_block!=-1:
 			jffs2_blocks.append([start_block,block])
-			print "JFFS2 block found: %d ~ %d" % (start_block, block)
+			print("JFFS2 block found: %d ~ %d" % (start_block, block))
 
 		return jffs2_blocks
 
 	def DumpJFFS2(self,name_prefix=''):
 		i=0
 		for (start_block,end_block) in self.FindJFFS2():
-			print 'Dumping %d JFFS2 block Block: %d - %d ...' % (i, start_block,end_block )
+			print('Dumping %d JFFS2 block Block: %d - %d ...' % (i, start_block,end_block ))
 			if name_prefix:
 				filename='%s%.2d.dmp' % (name_prefix, i)
 			else:

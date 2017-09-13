@@ -27,14 +27,14 @@ class FlashFile:
 		self.PageCount=(self.FileSize)/self.PageSize
 		self.BlockCount = self.PageCount/self.PagePerBlock
 
-		print 'PageSize: 0x%x' % self.PageSize
-		print 'OOBSize: 0x%x' % self.OOBSize
-		print 'PagePerBlock: 0x%x' % self.PagePerBlock
-		print 'BlockSize: 0x%x' % self.BlockSize
-		print 'RawPageSize: 0x%x' % self.RawPageSize
-		print 'PageCount: 0x%x' % self.PageCount
-		print 'FileSize: 0x%x' % self.FileSize
-		print ''
+		print('PageSize: 0x%x' % self.PageSize)
+		print('OOBSize: 0x%x' % self.OOBSize)
+		print('PagePerBlock: 0x%x' % self.PagePerBlock)
+		print('BlockSize: 0x%x' % self.BlockSize)
+		print('RawPageSize: 0x%x' % self.RawPageSize)
+		print('PageCount: 0x%x' % self.PageCount)
+		print('FileSize: 0x%x' % self.FileSize)
+		print('')
 
 	def Open(self,filename):
 		try:
@@ -42,7 +42,7 @@ class FlashFile:
 			import os
 			self.FileSize=os.path.getsize(filename)
 		except:
-			print "Can't open a file:",filename
+			print("Can't open a file:",filename)
 			return False
 		return True
 
