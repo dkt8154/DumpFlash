@@ -47,6 +47,7 @@ class NandIO:
 	NAND_STATUS_NOT_PROTECTED=(1<<7) # HIGH - NOT,   LOW - PROTECTED
 
 	LP_Options=1
+        # Name, ID, PageSize, ChipSizeMB, EraseSize, Options, AddrCycles
 	DeviceDescriptions=[
 		["NAND 1MiB 5V 8-bit",		0x6e, 256, 1, 0x1000, 0, 3],
 		["NAND 2MiB 5V 8-bit",		0x64, 256, 2, 0x1000, 0, 3],
