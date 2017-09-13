@@ -1,5 +1,3 @@
-DumpUBoot.pyc
-ECC.pyc
-FlashDevice.pyc
-FlashFile.pyc
-FlashUtil.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
