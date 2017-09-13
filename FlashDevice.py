@@ -170,7 +170,7 @@ class NandIO:
 		while 1:
 			self.Ftdi.write_data(Array('B', [Ftdi.GET_BITS_HIGH]))
 			data = self.Ftdi.read_data_bytes(1)
-			if data[0]&2==0x2:
+			if (len(data)>0 and data[0]&2==0x2):
 				return
 			else:
 				if self.Debug>0:
